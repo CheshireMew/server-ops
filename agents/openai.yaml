@@ -1,0 +1,4 @@
+interface:
+  display_name: "Server Ops"
+  short_description: "通过 SSH 管理服务器、保存登录账号，并执行和核实部署维护操作"
+  default_prompt: "$server-ops 检查我指定服务器的运行状态，说明当前结果和需要处理的问题。"
