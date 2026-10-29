@@ -10,8 +10,7 @@
 | `references/usage.md` | 本机配置、命令和结果合同 |
 | `server-ops.ps1` | 从 Skill 自身目录加载配置并启动 Python |
 | `scripts/server.py` | 账号窗口、Windows 加密、SSH 执行和 JSON 输出 |
-| `scripts/guardrails.py` | SSH 连接前的命令检查 |
-| `scripts/test_guardrails.py` | 本地命令检查与授权传递测试 |
+| `scripts/test_server.py` | 命令与脚本传递、授权记录及 SSH 结果合同测试 |
 
 改变用户入口、参数或行为时，同步更新用法文档及中、英、日三份 README。只有宿主适配发生变化时才修改 `agents/openai.yaml`。
 
@@ -20,10 +19,10 @@
 在仓库根目录使用 Python 3.10 或更新版本运行：
 
 ```powershell
-python -B -m unittest discover -s scripts -p test_guardrails.py -v
+python -B -m unittest discover -s scripts -p test_server.py -v
 ```
 
-这组测试检查命令分类、连接前拦截和授权传递，不连接真实服务器。SSH 或账号窗口的修改需要另行验证实际入口；在 PR 中写清已测范围和仍未验证的部分。真实服务器上的操作需要对应用户的具体授权。
+这组测试检查 CLI 输入、完整脚本传递、授权记录、远端结果及输出隐藏，不连接真实服务器。它不替执行 Agent 判断命令风险或核实用户授权。SSH 或账号窗口的修改需要另行验证实际入口；说明已测范围和仍未验证的部分。真实服务器上的操作按 `SKILL.md` 的授权边界执行，查询与简单无危险操作无需另行确认。
 
 `.local/` 和 `.runs/` 保留在本机，不提交配置、加密账号、服务器笔记、任务脚本或日志副本。示例使用 `prod`、`ssh.example.com` 等明确的示例值。
 

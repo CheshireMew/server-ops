@@ -45,7 +45,7 @@ $server-ops 检查 prod 的运行状态，列出需要处理的问题。
 | 部署或更新项目 | 检查 prod 上指定项目的版本、配置和启动方式，给出更新方案。 | 待确认的具体操作；批准后执行并核验运行入口 |
 | 修改配置或维护服务 | 检查 prod 上 nginx 的配置，说明需要怎样修改和验证。 | 修改范围和影响；批准后实施并检查结果 |
 
-部署、改配置、删除、安装、重启等会改变运行或数据的操作，先说明服务器、范围和影响，取得你对具体方案的同意后执行。同一获批方案继续完成，无需逐条重复确认。
+只读查询和本次目标内简单无危险的操作直接完成，无需逐条确认。部署、修改运行配置、删除、安装、重启等危险操作需要你对具体目标和范围的授权；缺少授权时先说明服务器、范围和影响，再取得同意。同一获批方案继续完成，无需逐条重复确认。
 
 ## 开始使用
 
@@ -110,7 +110,7 @@ New-Item -ItemType Directory -Path "$serverOpsRoot\.local" -Force | Out-Null
 
 省略 `--server` 时使用配置中的 `default_server`。执行默认超时为 30 秒，可用 `--timeout 60` 调整。长脚本放到本 Skill 的 `.runs` 中，具体示例见 [连接工具用法](./references/usage.md)。
 
-`list`、`status` 和 `exec` 返回 JSON。远端执行结果包含 `server`、`host`、`username`、`exit_code`、`stdout`、`stderr` 和 `approval_provided`，便于 Agent 或脚本继续检查。明确可识别的查询直接执行；需要授权或无法判断的命令会在 SSH 连接前返回 `approval_required: true`，进程退出码为 `3`。授权记录的用法见 [操作授权说明](./SKILL.md#危险操作的用户授权)。
+`list`、`status` 和 `exec` 返回 JSON。远端执行结果包含 `server`、`host`、`username`、`exit_code`、`stdout`、`stderr` 和 `approval_provided`，便于 Agent 或脚本继续检查。Agent 阅读完整命令或脚本，按实际影响判断授权要求；工具不再用命令白名单拦截查询或陌生语法。只读和无危险操作省略 `--user-approval`，危险操作用它记录真实授权，工具进程原样返回远端退出码。授权记录的用法见 [操作授权说明](./SKILL.md#危险操作的用户授权)。
 
 超时只表示 SSH 通道已关闭，远端任务可能仍在运行。继续操作前应检查服务器状态，避免重复执行。
 
@@ -120,7 +120,7 @@ New-Item -ItemType Directory -Path "$serverOpsRoot\.local" -Force | Out-Null
 | --- | --- |
 | [SKILL.md](./SKILL.md) | Agent 的工作方式、授权要求和完成标准 |
 | [references/usage.md](./references/usage.md) | 配置、完整命令和结果说明 |
-| `scripts/` | SSH 工具、命令检查和本地测试 |
+| `scripts/` | SSH 工具和本地合同测试 |
 | `.local/` | 本机配置、加密账号和服务器笔记，Git 忽略 |
 | `.runs/` | 任务脚本、诊断材料和日志副本，Git 忽略 |
 

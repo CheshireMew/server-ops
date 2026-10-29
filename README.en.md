@@ -45,7 +45,7 @@ $server-ops Check prod and report its current state and any issues that need att
 | Deploy or update a project | Check the specified project's version, configuration, and startup method on prod; propose an update. | A concrete plan for approval, followed by execution and verification |
 | Change configuration or maintain a service | Inspect nginx configuration on prod and explain the required changes and checks. | Scope and impact, then implementation and verification after approval |
 
-Before deployments, configuration changes, deletion, installation, or restarts, the Agent explains the target server, scope, and impact and obtains your approval for that specific plan. An approved plan can proceed without asking again for every command.
+Read-only queries and simple harmless operations within the requested task proceed without additional confirmation. Deployments, changes to running configuration, deletion, installation, restarts, and other dangerous operations require your authorization for the specific target and scope. When that authorization is missing, the Agent explains the server, scope, and impact before asking. An approved plan can proceed without asking again for every command.
 
 ## Get started
 
@@ -110,7 +110,7 @@ Use `server-ops.ps1` as the entry point, with `$serverOpsRoot` from the setup ab
 
 Omitting `--server` uses `default_server`. The command timeout defaults to 30 seconds; change it with `--timeout 60`. Store longer task scripts in the Skill's `.runs` directory. See [tool usage](./references/usage.md) for complete examples; the detailed working documents are currently in Chinese.
 
-`list`, `status`, and `exec` return JSON. Execution results include `server`, `host`, `username`, `exit_code`, `stdout`, `stderr`, and `approval_provided`. Recognized queries can run directly. Commands requiring approval or using unrecognized syntax return `approval_required: true` and exit code `3` before connecting. See [SKILL.md](./SKILL.md) for the approval process.
+`list`, `status`, and `exec` return JSON. Execution results include `server`, `host`, `username`, `exit_code`, `stdout`, `stderr`, and `approval_provided`. The Agent reads the complete command or script and assesses its actual effects; the tool no longer uses a command allowlist to block queries or unfamiliar syntax. Read-only and harmless operations omit `--user-approval`; dangerous operations use it to record actual user authorization. The tool returns the remote exit code unchanged. See [SKILL.md](./SKILL.md) for the approval process.
 
 A timeout closes the SSH channel; the remote task may still be running. Check its state before retrying.
 
@@ -120,7 +120,7 @@ A timeout closes the SSH channel; the remote task may still be running. Check it
 | --- | --- |
 | [SKILL.md](./SKILL.md) | Agent workflow, approval requirements, and completion criteria |
 | [references/usage.md](./references/usage.md) | Configuration, commands, and result details |
-| `scripts/` | SSH tool, command checks, and local tests |
+| `scripts/` | SSH tool and local contract tests |
 | `.local/` | Local configuration, encrypted accounts, and server notes; ignored by Git |
 | `.runs/` | Task scripts, diagnostic material, and log copies; ignored by Git |
 
